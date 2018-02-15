@@ -56,7 +56,7 @@ be any of the following options: red, crimson, orange, yellow, green,
 blue, indigo, or violet.
 ......................................................................*)
 
-type color_label = NotImplemented ;;
+type color_label = Red | Crimson | Orange | Yellow | Green | Blue | Indigo | Violet ;;
 
 (* You've just defined a new variant type! But this is an overly
 simplistic representation of colors. Let's make it more usable.
@@ -91,7 +91,9 @@ channels. You'll want to use Simple and RGB as the value constructors
 in this new variant type.
 ......................................................................*)
 
-type color = NotImplemented ;;
+type color = 
+  | Simple of color_label
+  | RGB of (int * int * int) ;;
 
 (* Note that there is an important assumption about the RGB values
 that determine whether a color is valid or not. The RGB type contains
@@ -117,8 +119,12 @@ an Invalid_Color exception with a useful message.
 
 exception Invalid_Color of string ;;
 
-let valid_rgb = 
-  fun _ -> failwith "valid_rgb not implemented" ;;
+let valid_rgb (x : color) : color = 
+  match x with
+  | Simple _ -> x
+  | RGB (col1, col2, col3) -> 
+          if col1 >= 0 && col1 <= 255 && col2 >= 0 && col2 <= 255 && col3 >= 0 && col3 <= 255 then x
+          else raise (Invalid_Color "invalid color") ;;
 
 (*......................................................................
 Exercise 3: Write a function, make_color, that accepts three integers
@@ -126,8 +132,8 @@ for the channel values and returns a value of the color type. Be sure
 to verify the invariant.
 ......................................................................*)
 
-let make_color = 
-  fun _ -> failwith "make_color not implemented" ;;
+let make_color (r : int) (g : int) (b : int) : color =
+  valid_rgb (RGB (r, g, b)) ;;
 
 (*......................................................................
 Exercise 4: Write a function, convert_to_rgb, that accepts a color and
@@ -142,10 +148,28 @@ below are some other values you might find helpful.
     255 | 255 |   0 | Yellow
      75 |   0 | 130 | Indigo
     240 | 130 | 240 | Violet
+
+         R  |  G  |  B  | Color
+    ----|-----|-----|------------
+    255 |   0 |   0 | Red
+      0 |  64 |   0 | Dark green
+      0 | 255 | 255 | Cyan
+    164 |  16 |  52 | Crimson
 ......................................................................*)
 
-let convert_to_rgb = 
-  fun _ -> failwith "convert_to_rgb not implemented" ;;
+let convert_to_rgb (c : color) : (int * int * int) = 
+  match c with
+  | Simple x -> 
+    (match x with 
+    | Red -> (255, 0, 0)
+    | Crimson -> (164, 16, 52)
+    | Orange -> (255, 165, 0)
+    | Yellow -> (255, 255, 0)
+    | Green -> (0, 255, 0)
+    | Blue -> (0, 0, 255)
+    | Indigo -> (75, 0, 130)
+    | Violet -> (240, 130, 240))
+  | RGB (r, g, b) -> (r, g, b) ;;
 
 (* If we want to blend two colors, we might be tempted to average each
 of the individual color channels. This might be fine, but a quirk in
@@ -205,7 +229,10 @@ should be. Then, consider the implications of representing the overall
 data type as a tuple or a record.
 ......................................................................*)
 
-type date = NotImplemented ;;
+type date = {
+  year : int;
+  month : int;
+  day : int } ;;
 
 (* After you've thought it through, look up the Date module in the
 OCaml documentation to see how this was implemented there. If you
@@ -247,9 +274,22 @@ the invariant is violated, and returns the date if valid.
 
 exception Invalid_Date of string ;;
 
-let valid_date = 
-  fun _ -> failwith "valid_date not implemented" ;;
-
+let valid_date (d : date) : date = 
+  let valid_year (yr : int) : bool = yr > 0 in
+  let valid_month (mon : int) : bool = mon > 0 && mon <= 12 in
+  let is_leap (year : int) : int = 
+    if not (year mod 4 = 0) then 28
+    else if not (year mod 100 = 0) then 29
+    else if not (year mod 400 = 0) then 28
+    else 29 in
+  let valid_day (day : int) (mon : int) (yr : int) : bool = 
+    match mon with
+    | 1 | 3 | 5 | 7 | 8 | 10 | 12 -> day > 0 && day <= 31
+    | 2 -> day > 0 && day <= is_leap yr
+    | 4 | 6 | 9 | 11 -> day > 0 && day <= 30
+    | _ -> false in
+  if valid_year d.year && valid_month d.month && valid_day d.day d.month d.year then d
+  else raise (Invalid_Date "invalid date") ;;
 
 (*======================================================================
 Part 3: Algebraic data types
@@ -262,7 +302,7 @@ Exercise 10: Define a person record type. Use the field names "name",
 "favorite", and "birthdate".
 ......................................................................*)
 
-type person = NotImplemented ;;
+type person = {name : string; favorite : color; birthdate : date} ;;
 
 (* Let's now do something with these person values. We'll create a
 data structure that allows us to model simple familial relationships.
@@ -301,7 +341,7 @@ ensure the invariants are preserved for color and date, use them here
 as well.
 ......................................................................*)
 
-let new_child = 
+let new_child (name : string) (c : color) (d : date) = 
   fun _ -> failwith "new_child not implemented" ;;
 
 (*......................................................................
