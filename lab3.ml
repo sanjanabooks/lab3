@@ -56,7 +56,8 @@ be any of the following options: red, crimson, orange, yellow, green,
 blue, indigo, or violet.
 ......................................................................*)
 
-type color_label = Red | Crimson | Orange | Yellow | Green | Blue | Indigo | Violet ;;
+type color_label = Red | Crimson | Orange | Yellow
+| Green | Blue | Indigo | Violet ;;
 
 (* You've just defined a new variant type! But this is an overly
 simplistic representation of colors. Let's make it more usable.
@@ -123,7 +124,8 @@ let valid_rgb (x : color) : color =
   match x with
   | Simple _ -> x
   | RGB (col1, col2, col3) -> 
-          if col1 >= 0 && col1 <= 255 && col2 >= 0 && col2 <= 255 && col3 >= 0 && col3 <= 255 then x
+          if col1 >= 0 && col1 <= 255 && col2 >= 0 &&
+          col2 <= 255 && col3 >= 0 && col3 <= 255 then x
           else raise (Invalid_Color "invalid color") ;;
 
 (*......................................................................
@@ -288,7 +290,8 @@ let valid_date (d : date) : date =
     | 2 -> day > 0 && day <= is_leap yr
     | 4 | 6 | 9 | 11 -> day > 0 && day <= 30
     | _ -> false in
-  if valid_year d.year && valid_month d.month && valid_day d.day d.month d.year then d
+  if valid_year d.year && valid_month d.month &&
+  valid_day d.day d.month d.year then d
   else raise (Invalid_Date "invalid date") ;;
 
 (*======================================================================
@@ -341,7 +344,7 @@ ensure the invariants are preserved for color and date, use them here
 as well.
 ......................................................................*)
 
-let new_child (name : string) (c : color) (d : date) = 
+let new_child = 
   fun _ -> failwith "new_child not implemented" ;;
 
 (*......................................................................
